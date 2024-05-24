@@ -1,0 +1,113 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{cmap}
+\usepackage[english, russian]{babel}
+\usepackage{indentfirst}
+\usepackage[left=20mm, top=20mm, right=20mm, bottom=20mm]{geometry}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox, fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Лабораторная работа №6}
+\fancyhead[R]{Техническое зрение}
+\fancyfoot[C]{\thepage}
+\graphicspath{{images/}}
+\usetikzlibrary{patterns}
+\definecolor{LightGray}{gray}{0.95}
+\definecolor{LightGray2}{gray}{0.7}
+\lstdefinestyle{pycode}{
+    language=Python,
+    basicstyle=\footnotesize\ttfamily,
+    numbers=left,
+    numberstyle=\scriptsize\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{LightGray},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{LightGray2},
+    linewidth=\linewidth,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!40!black},
+    stringstyle=\color{purple},
+    escapeinside={\%*}{*)},
+    inputencoding=utf8x,
+    xleftmargin=0pt,
+    framexleftmargin=0pt,
+    framexrightmargin=0pt
+}
+\lstset{style=pycode}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={contents setup},
+    pdfpagemode=FullScreen,
+}
+\setlength{\parskip}{1.5mm}
+\setlength{\headheight}{15pt}
+\setlength{\footskip}{15pt}
+\allowdisplaybreaks
+\DeclareMathOperator{\sinc}{sinc}
+\newcommand{\frc}[2]{\raisebox{2pt}{$#1$}\big/\raisebox{-3pt}{$#2$}}
+
+\begin{document}
+    \begin{titlepage}
+
+        \begin{center}
+        \includegraphics[width=0.3\textwidth]{itmo.png} % requires itmo.png in /images folder
+        \vfill
+
+        Федеральное государственное автономное образовательное учреждение высшего образования
+        «Национальный Исследовательский Университет ИТМО»\\
+
+        \vfill
+        {\large\bf ЛАБОРАТОРНАЯ РАБОТА №6}\\
+        {\large\bf ПРЕДМЕТ «ТЕХНИЧЕСКОЕ ЗРЕНИЕ»}\\
+        {\large\bf ТЕМА «МОРФОЛОГИЧЕСКИЙ АНАЛИЗ ИЗОБРАЖЕНИЙ»}
+        \vfill
+
+        \begin{flushright}
+            \begin{minipage}{.45\textwidth}
+            {
+                \hbox{Преподаватель:}
+                \hbox{Шаветов C. В.}
+                \hbox{}
+                \hbox{Выполнили:} 
+                \hbox{Румянцев А. А.}
+                \hbox{Чебаненко Д. А.}
+                \hbox{Овчинников П. А.}
+                \hbox{}
+                \hbox{Поток: ТЕХ. ЗРЕНИЕ 2.1}
+                \hbox{Факультет: СУиР}
+                \hbox{Группа: R3241}
+            }
+            \end{minipage}
+        \end{flushright}
+
+        \vfill
+
+        Санкт-Петербург\\
+        2024
+        \end{center}
+    \end{titlepage}
+
+    \tableofcontents
+
+    \newpage
+\end{document}
