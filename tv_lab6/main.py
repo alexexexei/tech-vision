@@ -2,24 +2,45 @@ import cv2
 import numpy as np
 
 
-def dilate(I, ker_sz=(5, 5), iters=1):
+def make_bin(I_bgr, par1, par2, par3):
+    if len(I_bgr.shape) == 3 and I_bgr.shape[2] == 3:
+        I_gray = cv2.cvtColor(I_bgr, cv2.COLOR_BGR2GRAY)
+    else:
+        I_gray = I_bgr
+    ret, I_bin = cv2.threshold(I_gray, par1, par2, par3)
+    return ret, I_bin
+
+
+def dilate(I, ker_sz=(5, 5), iters=1, bgr=False):
+    I_bin = I
+    if not bgr:
+        _, I_bin = make_bin(I, 160, 255, cv2.THRESH_BINARY)
     ker = np.ones(ker_sz, np.uint8)
-    return cv2.dilate(I, ker, iterations=iters)
+    return cv2.dilate(I_bin, ker, iterations=iters)
 
 
-def erode(I, ker_sz=(5, 5), iters=1):
+def erode(I, ker_sz=(5, 5), iters=1, bgr=False):
+    I_bin = I
+    if not bgr:
+        _, I_bin = make_bin(I, 160, 255, cv2.THRESH_BINARY)
     ker = np.ones(ker_sz, np.uint8)
-    return cv2.erode(I, ker, iterations=iters)
+    return cv2.erode(I_bin, ker, iterations=iters)
 
 
-def opening(I, ker_sz=(5, 5)):
+def opening(I, ker_sz=(5, 5), bgr=False):
+    I_bin = I
+    if not bgr:
+        _, I_bin = make_bin(I, 160, 255, cv2.THRESH_BINARY)
     ker = np.ones(ker_sz, np.uint8)
-    return cv2.morphologyEx(I, cv2.MORPH_OPEN, ker)
+    return cv2.morphologyEx(I_bin, cv2.MORPH_OPEN, ker)
 
 
-def closing(I, ker_sz=(5, 5)):
+def closing(I, ker_sz=(5, 5), bgr=False):
+    I_bin = I
+    if not bgr:
+        _, I_bin = make_bin(I, 160, 255, cv2.THRESH_BINARY)
     ker = np.ones(ker_sz, np.uint8)
-    return cv2.morphologyEx(I, cv2.MORPH_CLOSE, ker)
+    return cv2.morphologyEx(I_bin, cv2.MORPH_CLOSE, ker)
 
 
 def find_counters(Inew, col=(0, 0, 255), th=2):
@@ -45,7 +66,7 @@ def outer_contour(A):
 
 
 def separate_objs(I, iters, mellipse=(5,5)):
-    ret, Inew = cv2.threshold(I, 160, 255, cv2.THRESH_BINARY_INV)
+    ret, Inew = make_bin(I, 160, 255, cv2.THRESH_BINARY_INV)
     B = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, mellipse)
 
     BW2 = cv2.morphologyEx(Inew,
@@ -93,9 +114,7 @@ def bwareaopen(A, dim, conn=8):
 
 
 def segmentation(I, dim, conn=8, mellpise=(5, 5), dis=5, coeff=0.6, color=(255, 0, 0)):
-    I_gray = cv2.cvtColor(I, cv2.COLOR_BGR2GRAY)
-    ret, I_bw = cv2.threshold(I_gray, 0, 255,
-                              cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    ret, I_bw = make_bin(I, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     I_bw = bwareaopen(I_bw, dim, conn)
     B = cv2.getStructuringElement (\
         cv2.MORPH_ELLIPSE, mellpise)
@@ -132,26 +151,27 @@ if __name__ == '__main__':
     
     bm = cv2.imread(f'{path}/{src}/base_morf.png', cv2.IMREAD_COLOR)
 
-    dil = dilate(bm, iters=3)
-    er = erode(bm, iters=4)
-    op = opening(bm, ker_sz=(15, 15))
-    cl = closing(bm, ker_sz=(18, 18))
+    col = True
+    dil = dilate(bm, iters=3, bgr=col)
+    er = erode(bm, iters=4, bgr=col)
+    op = opening(bm, ker_sz=(15, 15), bgr=col)
+    cl = closing(bm, ker_sz=(18, 18), bgr=col)
     cv2.imwrite(f"{path}/{render}/dil_bm.png", dil)
     cv2.imwrite(f"{path}/{render}/er_bm.png", er)
     cv2.imwrite(f"{path}/{render}/op_bm.png", op)
     cv2.imwrite(f"{path}/{render}/cl_bm.png", cl)
 
-    ans = dilate(erode(bm, iters=4), iters=9)
-    ans2 = closing(opening(bm, (15, 15)), (18, 18))
+    ans = dilate(erode(bm, iters=4, bgr=col), iters=9, bgr=col)
+    ans2 = closing(opening(bm, (15, 15), bgr=col), (18, 18), bgr=col)
     cv2.imwrite(f"{path}/{render}/er_then_dil_bm.png", ans)
     cv2.imwrite(f"{path}/{render}/op_then_cl_bm.png", ans2)
 
-    binary_I = cv2.imread(f"{path}/{src}/bin.png", cv2.IMREAD_GRAYSCALE)
+    bin_I = cv2.imread(f"{path}/{src}/bin.png", cv2.IMREAD_COLOR)
 
-    binary_Inew = separate_objs(binary_I, 10)
-    c_im = find_counters(binary_Inew)
-    c_im2 = outer_contour(binary_Inew)
-    cv2.imwrite(f"{path}/{render}/bin_new.png", binary_Inew)
+    bin_Inew = separate_objs(bin_I, 10)
+    c_im = find_counters(bin_Inew)
+    c_im2 = outer_contour(bin_Inew)
+    cv2.imwrite(f"{path}/{render}/bin_new.png", bin_Inew)
     cv2.imwrite(f"{path}/{render}/bin_new_c.png", c_im)
     cv2.imwrite(f"{path}/{render}/bin_new_c2.png", c_im2)
 
