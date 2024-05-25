@@ -112,26 +112,35 @@ def segmentation(I, dim, conn=8, mellpise=(5, 5), dis=5, coeff=0.6, color=(255, 
 
 
 if __name__ == '__main__':
-    bm = cv2.imread("source/base_morf.png", cv2.IMREAD_COLOR)
+    path = 'tv_lab6'
+    src = 'source'
+    render = 'renders'
+    
+    bm = cv2.imread(f'{path}/{src}/base_morf.png', cv2.IMREAD_COLOR)
 
     dil = dilate(bm, iters=3)
     er = erode(bm, iters=4)
     op = opening(bm, ker_sz=(15, 15))
     cl = closing(bm, ker_sz=(18, 18))
-    cv2.imwrite("renders/dil_bm.png", dil)
-    cv2.imwrite("renders/er_bm.png", er)
-    cv2.imwrite("renders/op_bm.png", op)
-    cv2.imwrite("renders/cl_bm.png", cl)
+    cv2.imwrite(f"{path}/{render}/dil_bm.png", dil)
+    cv2.imwrite(f"{path}/{render}/er_bm.png", er)
+    cv2.imwrite(f"{path}/{render}/op_bm.png", op)
+    cv2.imwrite(f"{path}/{render}/cl_bm.png", cl)
 
-    binary_I = cv2.imread("source/bin.png", cv2.IMREAD_GRAYSCALE)
+    ans = dilate(erode(bm, iters=4), iters=9)
+    ans2 = closing(opening(bm, (15, 15)), (18, 18))
+    cv2.imwrite(f"{path}/{render}/er_then_dil_bm.png", ans)
+    cv2.imwrite(f"{path}/{render}/op_then_cl_bm.png", ans2)
+
+    binary_I = cv2.imread(f"{path}/{src}/bin.png", cv2.IMREAD_GRAYSCALE)
 
     binary_Inew = separate_objs(binary_I, 10)
     c_im = find_counters(binary_I, binary_Inew)
-    cv2.imwrite(f"renders/bin_new.png", binary_Inew)
-    cv2.imwrite(f"renders/bin_new_c.png", c_im)
+    cv2.imwrite(f"{path}/{render}/bin_new.png", binary_Inew)
+    cv2.imwrite(f"{path}/{render}/bin_new_c.png", c_im)
 
-    seg_I = cv2.imread("source/seg.jpg", cv2.IMREAD_COLOR)
+    seg_I = cv2.imread(f"{path}/{src}/seg.jpg", cv2.IMREAD_COLOR)
     
     seg_Inew, smj = segmentation(seg_I, dim=20, conn=4, mellpise=(5, 5), coeff=0.6)
-    cv2.imwrite(f"renders/seg_new.jpg", seg_Inew)
-    cv2.imwrite(f"renders/seg_new_mj.jpg", smj)
+    cv2.imwrite(f"{path}/{render}/seg_new.jpg", seg_Inew)
+    cv2.imwrite(f"{path}/{render}/seg_new_mj.jpg", smj)
