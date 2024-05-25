@@ -22,12 +22,26 @@ def closing(I, ker_sz=(5, 5)):
     return cv2.morphologyEx(I, cv2.MORPH_CLOSE, ker)
 
 
-def find_counters(I, Inew):
+def find_counters(Inew, col=(0, 0, 255), th=2):
     contours, _ = cv2.findContours(Inew, cv2.RETR_EXTERNAL,
                                    cv2.CHAIN_APPROX_SIMPLE)
-    contour_I = cv2.cvtColor(I, cv2.COLOR_GRAY2BGR)
-    cv2.drawContours(contour_I, contours, -1, (0, 0, 255), 2)
+    contour_I = cv2.cvtColor(Inew, cv2.COLOR_GRAY2BGR)
+    cv2.drawContours(contour_I, contours, -1, col, th)
     return contour_I
+
+
+def inner_contour(A):
+    B = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    erosion = cv2.erode(A, B)
+    inner_contour = A - erosion
+    return inner_contour
+
+
+def outer_contour(A):
+    B = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    dilation = cv2.dilate(A, B)
+    outer_contour = dilation - A
+    return outer_contour
 
 
 def separate_objs(I, iters, mellipse=(5,5)):
@@ -135,9 +149,11 @@ if __name__ == '__main__':
     binary_I = cv2.imread(f"{path}/{src}/bin.png", cv2.IMREAD_GRAYSCALE)
 
     binary_Inew = separate_objs(binary_I, 10)
-    c_im = find_counters(binary_I, binary_Inew)
+    c_im = find_counters(binary_Inew)
+    c_im2 = outer_contour(binary_Inew)
     cv2.imwrite(f"{path}/{render}/bin_new.png", binary_Inew)
     cv2.imwrite(f"{path}/{render}/bin_new_c.png", c_im)
+    cv2.imwrite(f"{path}/{render}/bin_new_c2.png", c_im2)
 
     seg_I = cv2.imread(f"{path}/{src}/seg.jpg", cv2.IMREAD_COLOR)
     
